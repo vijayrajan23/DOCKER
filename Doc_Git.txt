@@ -1,29 +1,47 @@
+# Git login github
+git config --global user.name "vijayrajan23"
+git config --global user.email "vijayrajan23@gmail.com"
+
+#Git full Config  view
+git config --list
+
+# Create one Directory
+mkdir DocS
+cd DocS
+# Initate git
+git init
+
+#Change working directory to staging area
+git add .
+
+#show status 
+git status
+
+#Commit stage snapshot
+git commit
+git commit -m "First_Change"
+
+# Add remote in the directory to your repository
+git remote add origin repository 
+git remote add origin https://github.com/vijayrajan23/DOCKER.git
+
+#Liste remote repos
+git remote -v
+
+# push your doc in you repo
+git push -u origin master
+
+#pull your docs form your repo
+git pull --all 
+
+# remove you repository 
+git remote remove origin
+
+#Clone your repo
 git clone https://github.com/vijayrajan23/test1.git
-  cd test1/
-  ls
-  ll
-  cd ..
-  git init
- touch test
-  echo "hello vija" >> test
-  cat test
-  git add .
-  git commit -u origin master
-  git commit -m "first_doc"
-  git push -u origin master
-  git remote -v
-  git remote add origin https://github.com/vijayrajan23/test1.git
-  git remote -v
-  git push -u origin master
-  git log
-  touch vijay
-  echo "nila and manjula" >> vijay
-  cat vijay 
-  git add.
-  git add .
-  git status
-  git commit -m "Sceond_doc"
-  git push -u origin master
-  git log
-  git remote remove origin
+ 
+# View git log
+git log
+
+
 
