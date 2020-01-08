@@ -1,0 +1,53 @@
+create docker container
+docker create --name containername image_name(ubuntu)
+docker run --name containername -it(input terminal) image_name
+
+start container
+docker start containername 
+
+Attache working docker container
+docker exec -it containername
+docker attache containername
+
+docker pull image
+docker login
+docker logout
+docker pull image_name
+docker push containerID
+
+docker	ps (Process Status)
+(curent working or runing container)
+docker ps -a (running and stop container)
+docker ps -n=2 (latest runing or notruning 2 container)
+docker ps -aq 
+docker ps -a --filter="name=containername"  container namebased searching
+docker ps -a --filter="id=containerid"  container id based search
+docker ps -a --filter status=running    status(running paused stop ) based container search
+docker ps -a --filter ancestor=imagename or ancestor=image:tak(or version)   images base search
+
+
+
+
+
+docker network
+how to create userdefine bridge
+docker network create --driver=bridge new_network_name
+docker network create new_network_name
+
+how to change network runnig container
+sudo docker network connect network_name container_name
+sudo docker network connect nila con1
+
+how find docker container ip vai docker hub
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' containername
+
+How to create new image from a containers changes
+
+stop container
+
+docker commit containerID  new_image_name
+docker commit containername new_image_name
+
+
+
+	
