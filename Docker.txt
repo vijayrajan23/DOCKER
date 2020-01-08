@@ -75,4 +75,35 @@ docker commit containername new_image_name
  docker run -itd --restart unless-stopped centos
 
 
-	
+#Docker Storage
+#Craet Storage
+docker volume create volume_name
+docker volume create my_volume
+
+#list Out docker volume 
+docker volume ls
+
+#ADD Volume new container
+# --mount option
+docker run -d --mount source=volume_name,traget=mount_directory
+docker run -d --name voltest --mount source=my_volume,traget=/app nginx
+
+# search voluem name type 
+sudo docker inspect -f '{{range.Mounts}} {{"Type: "}}{{.Type}}  {{"NAME: "}}{{.Name}}  {{"DESTINATION: "}}{{.Destination}}{{end}}' volte
+>>> Type: volume  NAME: my_volume  DESTINATION: /app
+
+# --mount readonly and readwrite permission
+docker run -d --mount source=volume_name,traget=mount_directory,permission(readonly) 
+docker run -d --name vtest --mount source=my_vol,traget=/usr/share/html:readonly  nginx
+
+# find docker voluem name type trage mode permission
+docker inspect -f '{{range.Mounts}} {{"Type: "}}{{.Type}}  {{"NAME: "}}{{.Name}}  {{"DESTINATION: "}}{{.Destination}} {{"Mode: "}}{{.Mode}}{{end}}' vtag
+>>>Type: volume  NAME: my_vol  DESTINATION: /usr/share/html Mode: ro
+
+# -v flag
+docker run -d -v docker_volume:mount_directory
+docker run -d --name vtest1 -v my_volume:/app nginx
+
+# -v flage --permission
+docker run -d -v docker_volume:mount_directory:permission
+docker run -d --name vtest2 -v my_vol1:/usr/share/html:ro nginx
