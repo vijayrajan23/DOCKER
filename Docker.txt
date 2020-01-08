@@ -20,16 +20,22 @@ docker push containerID
 docker	ps (Process Status)
 (curent working or runing container)
 docker ps -a (running and stop container)
+
 #Check last create 2 container
 docker ps -n=2 (latest runing or notruning 2 container)
+
 #Docker container ID
 docker ps -aq 
+
 # Docker filter namebased search
 docker ps -a --filter="name=containername"  container namebased searching
+
 # Docker Filter Container ID Based
 docker ps -a --filter="id=containerid"  container id based search
+
 #Docker Status based filter
 docker ps -a --filter status=running    status(running paused stop ) based container search
+
 #Docker Filter ISO or image based
 docker ps -a --filter ancestor=imagename or ancestor=image:tak(or version)   images base search
 
@@ -40,9 +46,18 @@ docker ps -a --filter ancestor=imagename or ancestor=image:tak(or version)   ima
 docker network create --driver=bridge new_network_name
 docker network create new_network_name
 
-#how to change network runnig container
+#list docker network
+docker network ls
+
+#How to connect a runnig container existing user_define bridge network
 sudo docker network connect network_name container_name
 sudo docker network connect nila con1
+#How to disconnect container from a user_define bridge network 
+docker network disconnect network_name container_name
+
+#Enable forwarding from Docker container to the outside world
+sysctl net.ipv4.conf.all.forwarding=1
+iptables -P FORWARD ACCEPT
 
 #how find docker container ip vai docker hub
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' containername
