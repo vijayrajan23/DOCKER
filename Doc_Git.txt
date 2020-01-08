@@ -1,0 +1,29 @@
+git clone https://github.com/vijayrajan23/test1.git
+  cd test1/
+  ls
+  ll
+  cd ..
+  git init
+ touch test
+  echo "hello vija" >> test
+  cat test
+  git add .
+  git commit -u origin master
+  git commit -m "first_doc"
+  git push -u origin master
+  git remote -v
+  git remote add origin https://github.com/vijayrajan23/test1.git
+  git remote -v
+  git push -u origin master
+  git log
+  touch vijay
+  echo "nila and manjula" >> vijay
+  cat vijay 
+  git add.
+  git add .
+  git status
+  git commit -m "Sceond_doc"
+  git push -u origin master
+  git log
+  git remote remove origin
+
