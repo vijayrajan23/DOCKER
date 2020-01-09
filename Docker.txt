@@ -144,6 +144,17 @@ docker plugin install --grant-all-permissions vieux/sshfs
 
 docker volume create --driver vieux/sshfs -o sshcmd=user_name@hosts:/path -o password=user_password volume_name
 docker volume create --driver vieux/sshfs -o sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume -o password=password docker_vol
+>>>$ sudo docker volume create --driver vieux/sshfs -o sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume -o password=. docker_vol
+     docker_vol
+>>>$ sudo docker volume ls
+     DRIVER               VOLUME NAME
+     vieux/sshfs:latest   docker_vol
+     local                my_volume
+     vieux/sshfs:latest   sshvolume
+
 
 #RUN container with volume driver
-docker run -d --name vol_driver_test --driver vieux/sshfs --mount src=docker_vol,target=/server,volume-opt=sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume,volume-opt=password=user_password container_image
+docker run -d --name vol_driver_test --volume-driver vieux/sshfs --mount src=docker_vol,target=/server,volume-opt=sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume,volume-opt=password=user_password container_image
+sudo docker run -d --name vol_driver_test --volume-driver vieux/sshfs --mount src=docker_vol,target=/server,volume-opt=sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume,volume-opt=password=password nginx
+>>> sudo docker inspect -f '{{range.Mounts}}{{.Name}}{{.Destination}}{{end}}' vol_driver_test
+    docker_vol  /server
