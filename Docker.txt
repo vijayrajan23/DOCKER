@@ -132,3 +132,18 @@ docker volume ls
 >>>local               my_volume
 
 
+                                   USE VOLUME DRIVER
+
+#Initial set-up
+#On the Docker host, install the vieux/sshfs plugin:
+
+docker plugin install --grant-all-permissions vieux/sshfs
+
+#Create a volume using a volume driver
+-o flag is omit option
+
+docker volume create --driver vieux/sshfs -o sshcmd=user_name@hosts:/path -o password=user_password volume_name
+docker volume create --driver vieux/sshfs -o sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume -o password=password docker_vol
+
+#RUN container with volume driver
+docker run -d --name vol_driver_test --driver vieux/sshfs --mount src=docker_vol,target=/server,volume-opt=sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume,volume-opt=password=user_password container_image
