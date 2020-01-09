@@ -107,3 +107,28 @@ docker run -d --name vtest1 -v my_volume:/app nginx
 # -v flage --permission
 docker run -d -v docker_volume:mount_directory:permission
 docker run -d --name vtest2 -v my_vol1:/usr/share/html:ro nginx
+
+# Remove Docker volume
+# list docker volume 
+docker volume ls
+>>>DRIVER              VOLUME NAME
+>>>local               my_vol2
+>>>local               my_volume
+
+#Stop volume used container and remove this container after remove volume
+docker stop containet_name
+docker stop vtag
+#conatine user volume find 
+docker inspect -f '{{range.Mounts}} {{"volumeName : "}}{{.Name}} {{"MountDirectory : "}}{{.Destination}} {{"filePermission : "}}{{.Mode}}{{end}}' vtag
+>>> volumeName : my_vol2 MountDirectory : /usr/share/html filePermission : ro
+
+docker rm container_name
+docker rm vtag
+
+docker volume rm volume_name
+docker volume rm my_vol2
+docker volume ls
+>>>DRIVER              VOLUME NAME
+>>>local               my_volume
+
+
