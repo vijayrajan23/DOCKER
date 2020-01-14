@@ -158,3 +158,52 @@ docker run -d --name vol_driver_test --volume-driver vieux/sshfs --mount src=doc
 sudo docker run -d --name vol_driver_test --volume-driver vieux/sshfs --mount src=docker_vol,target=/server,volume-opt=sshcmd=ubuntu@192.168.5.146:/home/ubuntu/sshfs_volume,volume-opt=password=password nginx
 >>> sudo docker inspect -f '{{range.Mounts}}{{.Name}}{{.Destination}}{{end}}' vol_driver_test
     docker_vol  /server
+
+
+
+
+       Docker Memory and Cup
+
+
+Docker check container status of memory cpu i/o
+   docker stats
+>>>CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+>>>ad74ae5796b1        res                 0.00%               1.934MiB / 7.718GiB   0.02%               10.6kB / 0B         18.3MB / 0B         1
+
+   docker stats --format"table{{.Container}}\t{{.NAME}}\t{{.CPUPerc}}\t{{.MEMUsage}}"
+   sudo docker stats --format "table{{.Container}}\t{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+
+
+Docker Memory add
+
+   docker run -it --name container_name --memory=memory_value image_name
+
+   docker run -it --name container_name --memory=70m ubuntu
+>>> sudo docker run -it --name container_name --memory=70m ubuntu
+>>>CONTAINER ID        NAME                           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+   708ef3fdce2c        Container_name                 0.00%               1.719MiB / 70MiB      2.46%               5kB / 0B            0B / 0B             1
+
+
+  docker inspect conatainer_name
+  "Memory": 73400320,(Bytes) 
+ 
+
+
+Docker CPU 
+
+
+  docker run -it --name container_name --cpus="cpu_core_value" image_name
+  docker run -it --name container_name --cpus="0.5" image_name
+
+>>>>>$sudo docker run -it --name container_name --cpus=".5" ubuntu (half core cpu process) 
+>>>>> sudo docker run -it --name container_name --memory=70m --cpus="0.5" --memory=70m ubuntu
+
+>>> docker inspect container_name 
+>>> "Memory": 73400320, (Bytes)
+    "NanoCpus": 500000000,()
+
+    
+ 
+
+
+
