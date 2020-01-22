@@ -149,7 +149,10 @@ pcs cluster auth node1 node2 -u hacluster
 
 pcs cluster setup  --name mycluster code1.test.net code2.test.net
 
-
+## Stop the secondry node of cluster use this coomd
+pcs cluster standby code2.test.net
+## check pcs status
+pcs status 
 
  pcs cluster cib drbd_cfg
      pcs -f drbd_cfg resource create drbd_clusterdb ocf:linbit:drbd drbd_resource=clusterdb
@@ -165,10 +168,27 @@ pcs cluster setup  --name mycluster code1.test.net code2.test.net
      pcs constraint colocation add servergroup  with master drbd_clusterdb_clone INFINITY
      pcs resource create ftpserver systemd:vsftpd --group servergroup
 
+## pcs cluster start the secondry node for checking 
 
+     pcs cluster unstandby code2.test.net
+ 
+## agin stop secodry node
+    
+    pcs cluster standby code2.test.net
 
+ ===============================ADD MYSQL Server===============================================================
 
+### move mysql configuration file to cluster lvm directory (/mysql_data)
+     mv /etc/my.cnf /mysql_data/my.cnf
+### create directory of data      
+     mkdir -p /mysql_data/data
+## add the mysql dtat directory and bind address     
+     vim /mysql_data/my.cnf
+     datadir=/mysql_data/data
+     bind-address=0.0.0.0
+## chage the ownr of mysql_data directory
+   chown -R mysql:mysql /mysql_data/
 
+## mysql db inisteation
 
-
-
+   mysql_install_db --no-defaults --datadir=/mysql_data/data
