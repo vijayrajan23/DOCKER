@@ -193,7 +193,7 @@ pcs status
 
    mysql_install_db --no-defaults --datadir=/mysql_data/data
 ## add pcs resource od dbserver
-   pcs resource create dbserver ocf:heartbeat:mysql config="/mysql_data/my.cnf" datadir="/mysql_data/data" pid="/var/lib/mysql/mysql.pid" socket="/var/lib/mysql/mysql.sock" user="mysql" group="mysql" additional_parameters="--user=mysql" --group servergroup
+   pcs resource create dbserver ocf:heartbeat:mysql binary="/usr/sbin/mysqld" config="/mysql_data/my.cnf" datadir="/mysql_data/data" pid="/var/lib/mysql/mysql.pid" socket="/var/lib/mysql/mysql.sock" user="mysql" group="mysql" additional_parameters="--user=mysql" --group servergroup
 ##start mysql server
     systemc start mysqld
     mysql_secure_installation 
