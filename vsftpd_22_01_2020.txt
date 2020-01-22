@@ -1,0 +1,79 @@
+      ## install vsftpd in centos 7 
+
+       # yum install vsftpd
+       # systemctl start vsftpd
+       # systemctl enable vsftpd
+       # netstat -tan | grep vsftpd
+       # firewall-cmd --zone=public --permanent --add-port=21/tcp
+       # firewall-cmd --zone=public --permanent --add-service=ftp
+       # firewall-cmd --reload
+       
+---------------------------------------------------------------------------------------------
+
+      ##Configuring FTP Server
+      ## backup original configuration file
+
+       # cp /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.orig
+       # vim /etc/vsftpd/vsftpd.conf (add below lines)
+
+          anonymous_enable=NO
+          local_enable=YES
+          write_enable=YES
+          local_umask=022
+          dirmessage_enable=YES
+          xferlog_enable=YES
+          connect_from_port_20=YES
+          xferlog_std_format=YES
+          chroot_local_user=YES 
+          listen=NO (with the listen_ipv6 directive)
+          listen_ipv6=YES 
+          pam_service_name=vsftpd
+          userlist_enable=YES
+          userlist_file=/etc/vsftpd.userlist
+          userlist_deny=NO
+          tcp_wrappers=YES
+
+      ##Now add these two following options to restrict FTP users to their Home directories vim /etc/vsftpd/vsftpd.conf.
+
+       chroot_local_user=YES
+       allow_writeable_chroot=YES
+
+        # systemctl restart vsftpd
+
+      ##create ftp user
+
+        #useradd -m -s /bin/bash test
+        # passwd test
+
+       ## Afterwards, we have to add the user ravi to the file /etc/vsftpd.userlist using the echo command as follows:
+
+           # echo "test" | tee -a /etc/vsftpd.userlist
+           # cat /etc/vsftpd.userlist
+ 
+
+      ## create directory
+  
+        # mkdir /var/www/html/test
+
+        # mkdir /var/www/html/test
+        # chown test:test  /var/www/html/test
+        # chmod 0700 /var/www/html/test
+     
+        # vim  /etc/vsftpd/vsftpd.conf (edit config file and add beow two lines)
+
+
+           # user_sub_token=$USER         # inserts the username in the local root directory 
+           # local_root=/webdata/RCMS/  # defines any users local root directory
+
+        # systemctl restart vsftpd
+    
+
+access in filezilla 
+
+ip  username passwd  port  connect	
+
+
+
+           
+      
+  
