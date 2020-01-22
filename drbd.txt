@@ -133,7 +133,13 @@ create the volum group
 create the logical volum 
   lvcreate --name lvm_name --size 2G vg_name
   lvcreate --name mysqldata --size 2G drbd_vg
-  lvcreate --name webdate --size 2G drbd_vg
+  lvcreate --name webdata --size 2G drbd_vg
+
+Formate disk partion
+  
+  mkfs.xfs /dev/drbd_vg/mysqldata
+  mkfs.xfs /dev/drbd_vg/webdata
+
 
 auth funcateio add 
 
