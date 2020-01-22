@@ -159,16 +159,11 @@ pcs cluster setup  --name mycluster code1.test.net code2.test.net
      pcs resource create webfsone Filesystem device="/dev/drbd_vg/mysqldata" directory="/mysql_data" fstype="xfs"
      pcs resource create webfstwo Filesystem device="/dev/drbd_vg/webdata" directory="/web_data" fstype="xfs"
      pcs resource create virtualip ocf:heartbeat:IPaddr2 ip=192.168.5.57 cidr_netmask=24
-
-
-
-
-
-
-
-
-
-
+     pcs resource create webserver ocf:heartbeat:apache configfile=/etc/httpd/conf/httpd.conf statusurl="http://localhost/server-status"
+     pcs resource group add servergroup virtualip lvm webfsone webfstwo  webserver
+     pcs constraint order promote drbd_clusterdb_clone then start servergroup INFINITY
+     pcs constraint colocation add servergroup  with master drbd_clusterdb_clone INFINITY
+     pcs resource create ftpserver systemd:vsftpd --group servergroup
 
 
 
