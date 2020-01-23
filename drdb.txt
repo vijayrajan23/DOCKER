@@ -1,0 +1,179 @@
+DRBD and PCS Cluster
+node1 node2
+##First assing statics ip address
+## assing hostname 
+hostnamectl set-hostname code1.test.net
+hostnamectl set-hostname code2.test.net
+## stop & disable firewall service
+systemctl stop firewalld
+systemctl disable firewalld
+## disable selinux service 
+setenforce 0
+vim /etc/selinux/config
+## add disk partion 
+fdisk /dev/sdb
+partprobe
+## add to hosts entry
+echo "192.168.5.55	code1.test.net	code1" | tee -a >> /etc/hosts
+echo "192.168.5.56	code2.test.net	code2" | tee -a >> /etc/hosts
+
+## install pcs support packages
+  yum install -y pacemaker pcs psmisc policycoreutils-python
+## add repo of drbd
+       rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+
+## install drdb
+       yum install -y kmod-drbd84 drbd84-utils
+
+## install httpd php vsftp mysql-server
+      yum install httpd php vsftp mysql-server
+
+### inform to kernal drbd 
+   modprobe drbd
+
+### create drdb resouser file
+/etc/drbd.d/resource_filename.res
+
+vim /etc/drbd.d/clusterdb.res
+# resource resource_filename
+resource clusterdb {
+  protocol C;
+  handlers {
+    pri-on-incon-degr "/usr/lib/drbd/notify-pri-on-incon-degr.sh; /usr/lib/drbd/notifyemergency-reboot.sh; echo b > /proc/sysrq-trigger ; reboot -f";
+    pri-lost-after-sb "/usr/lib/drbd/notify-pri-lost-after-sb.sh; /usr/lib/drbd/notifyemergency-reboot.sh; echo b > /proc/sysrq-trigger; reboot -f";
+    local-io-error "/usr/lib/drbd/notify-io-error.sh; /usr/lib/drbd/notify-emergencyshutdown.sh; echo o > /proc/sysrq-trigger ; halt -f";
+    fence-peer "/usr/lib/drbd/crm-fence-peer.sh";
+    split-brain "/usr/lib/drbd/notify-split-brain.sh admin@acme.com";
+    out-of-sync "/usr/lib/drbd/notify-out-of-sync.sh admin@acme.com";
+  }
+  startup {
+    degr-wfc-timeout 120; # 2 minutes.
+    outdated-wfc-timeout 2; # 2 seconds.
+  }
+  disk {
+    on-io-error detach;
+  }
+  net {
+   cram-hmac-alg "sha1";
+   shared-secret "clusterdb";
+   after-sb-0pri disconnect;
+   after-sb-1pri disconnect;
+   after-sb-2pri disconnect;
+   rr-conflict disconnect;
+
+  }
+  syncer {
+   rate 150M;
+   al-extents 257; #Also Linbit told me so personally. The recommended range for this should be between 7 and 3833. The default value is 127
+   on-no-data-accessible io-error;
+  }
+  on code1.test.net {
+    device /dev/drbd0;
+    disk /dev/sdb1;
+    address 192.168.5.55:7788;
+    flexible-meta-disk internal;
+  }
+ on code2.test.net {
+    device /dev/drbd0;
+    disk /dev/sdb1;
+    address 192.168.5.56:7788;
+    meta-disk internal;
+  }
+  }
+
+## create drbd matedata
+drbdadm create-md resource_name
+drbdadm create-md clusterdb
+## start or up resource
+drbdadm up clusterdb
+
+## start the drbd services 
+systemctl start drbd
+systemctl enable drbd
+## sync disck 
+drbdadm -- --overwrite-data-of-peer primary clusterdb
+
+crate to two directory
+mkdir /mysqldata
+mkdir /webdata
+## edit lvm configuration file
+vim /etc/lvm/lvm.conf
+ ## her add disk pration name lin /dev/sdb1
+   add:  filter = [ "r|/dev/sdb1|", "r|/dev/disk/*|", "r|/dev/block/*|", "a|.*|" ]
+## update the write cache state value put 0
+   edit: write_cache_state = 1 to write_cache_state = 0
+## update lvmtead vlue put 0
+   edit:   use_lvmetad = 1 to  use_lvmetad = 0
+## infor to kernale lvm changes
+lvmconf --enable-halvm --services --startstopservices
+
+dracut -H -f /boot/initramfs-$(uname -r).img $(uname -r)
+after reboot
+## set drbd primary node 
+drbdadm primary --force resources_name
+drbdadm primary --force clusterdb
+
+##start pcs service all node
+systemctl start pcsd
+systemctl enable pcsd
+
+## create password hacluster
+passwd hacluster
+ 
+
+
+=================== create LVM pration on primary node (code1)===========================
+create the physical	drive  use pvcreate
+  pvcreate pv_name
+  pvcreate /dev/drbd0
+create the volum group
+  vgcreate vg_name
+  vgcreate drbd_vg /dev/drbd0
+create the logical volum 
+  lvcreate --name lvm_name --size 2G vg_name
+  lvcreate --name mysqldata --size 2G drbd_vg
+  lvcreate --name webdata --size 2G drbd_vg
+
+Formate disk partion
+  
+  mkfs.xfs /dev/drbd_vg/mysqldata
+  mkfs.xfs /dev/drbd_vg/webdata
+
+
+auth funcateio add 
+
+pcs cluster auth node1 node2 -u hacluster 
+
+pcs cluster auth code1.test.net code2.test.net -u hacluster
+
+pcs cluster setup  --name mycluster code1.test.net code2.test.net
+
+
+
+ pcs cluster cib drbd_cfg
+     pcs -f drbd_cfg resource create drbd_clusterdb ocf:linbit:drbd drbd_resource=clusterdb
+     pcs -f drbd_cfg resource master drbd_clusterdb_clone drbd_clusterdb master-max=1 master-node-max=1 clone-max=2 clone-node-max=1 notify=true
+     pcs cluster cib-push drbd_cfg
+     pcs resource create lvm ocf:heartbeat:LVM volgrpname=drbd_vg
+     pcs resource create webfsone Filesystem device="/dev/drbd_vg/mysqldata" directory="/mysql_data" fstype="xfs"
+     pcs resource create webfstwo Filesystem device="/dev/drbd_vg/webdata" directory="/web_data" fstype="xfs"
+     pcs resource create virtualip ocf:heartbeat:IPaddr2 ip=192.168.5.57 cidr_netmask=24
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

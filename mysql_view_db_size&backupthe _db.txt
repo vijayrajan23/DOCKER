@@ -1,0 +1,36 @@
+
+####### View mysql database sizes
+
+mysql> SELECT table_schema AS "Database name", SUM(data_length + index_length) / 1024 / 1024 AS "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
++--------------------+----------------+
+| Database name      | Size (MB)      |
++--------------------+----------------+
+| information_schema |     0.00878906 |
+| modify_value       |    44.26562500 |
+| mysql              |     0.64429665 |
+| nameserver         | 30335.99090195 |
+| nila               | 10188.74129868 |
+| test1              |     0.01562500 |
+| test_welfare       |     0.02064514 |
++--------------------+----------------+
+
+SELECT table_schema AS "Database name", SUM(ROUND(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024 / 1024), 2)) AS "SIZE IN GB" FROM information_schema.TABLES GROUP BY table_schema;
++--------------------+------------+
+| Database name      | SIZE IN GB |
++--------------------+------------+
+| information_schema |       0.00 |
+| modify_value       |       0.04 |
+| mysql              |       0.00 |
+| nameserver         |      29.53 |
+| nila               |       9.90 |
+| test1              |       0.00 |
+| test_welfare       |       0.00 |
++--------------------+------------+
+
+
+####### mysql backup the database store .gz commprastion
+
+mysqldump -u root -p oldrcmsdata_2015_2016 | gzip > oldrcmsdata_2015_2016.gz
+
+## show the all file size human
+   du -shxP *	
