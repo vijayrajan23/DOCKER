@@ -1,0 +1,16 @@
+FROM centos
+RUN echo "s1.rnd.net" /etc/hosts
+RUN useradd -ms /bin/bash vijay
+RUN echo "vijay:1234" | chpasswd
+RUN yum -y install httpd 
+RUN yum -y install vsftpd 
+COPY index.html /var/www/html/
+RUN mv /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.org
+RUN chmod -R 775 /var/www/html/
+RUN chown -R vijay:apache /var/www/html/
+COPY vsftpd.userlist /etc/
+COPY vsftpd.conf /etc/vsftpd/
+CMD ["/usr/sbin/httpd","-D","FOREGROUND"]
+CMD ["/usr/sbin/vsftpd","-D","FOREGROUND"]
+EXPOSE 80 20 21
+

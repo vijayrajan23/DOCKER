@@ -1,0 +1,98 @@
+[root@rits_server ~]# df -Th
+Filesystem                       Type      Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root          xfs        50G   35G   15G  71% /
+devtmpfs                         devtmpfs   55G     0   55G   0% /dev
+tmpfs                            tmpfs      55G     0   55G   0% /dev/shm
+tmpfs                            tmpfs      55G  4.1G   51G   8% /run
+tmpfs                            tmpfs      55G     0   55G   0% /sys/fs/cgroup
+/dev/sda2                        xfs       497M  212M  286M  43% /boot
+/dev/sda1                        vfat      500M  9.5M  491M   2% /boot/efi
+/dev/mapper/centos-var_lib_mysql xfs       133G  127G  6.5G  96% /var/lib/mysql
+/dev/mapper/centos-var_www_html  xfs        60G   21G   40G  34% /var/www/html
+/dev/mapper/centos-tmp           xfs        10G   40M   10G   1% /tmp
+/dev/mapper/centos-var_log       xfs        50G   29G   22G  58% /var/log
+/dev/mapper/centos-home          xfs        30G   25G  5.1G  84% /home
+/dev/mapper/vg1-backupPlus       ext4      493G  391G   77G  84% /backupPlus
+/dev/mapper/vg1-backup           ext4      291G  177G  101G  64% /backup
+tmpfs                            tmpfs      11G     0   11G   0% /run/user/1010
+mysql> SELECT table_schema AS "Database name", SUM(data_length + index_length) / 1024 / 1024 AS "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
++--------------------+----------------+
+| Database name      | Size (MB)      |
++--------------------+----------------+
+| aps_chennai        |    10.57117081 |
+| bds_rcms           |  5938.63884735 |
+| gpstrackall        |     0.06174850 |
+| information_schema |     0.00878906 |
+| modify_rcms        |    44.26562500 |
+| mysql              |     0.64429665 |
+| otalms             |     8.04687500 |
+| performance_schema |     0.00000000 |
+| radiant            |  1043.60264969 |
+| radiant_host       |    37.10475540 |
+| rcmsbilling        |     0.82806015 |
+| rcmsdata           | 30335.99090195 |
+| rcmsdata_2015_2016 |           NULL |
+| rcmsdata_apr04     | 10188.74129868 |
+| rcmsdata_april4    |  8268.44337082 |
+| rcmsdata_aug       |  6044.71420670 |
+| rcmsdata_feb       |  8972.29718018 |
+| rcmsdata_june16    |  4553.77925491 |
+| rcmsdata_march15   | 10359.61751938 |
+| rcmsdata_new_last  |     0.03125000 |
+| rcmsdata_nov       |    24.82489014 |
+| rcmsdata_sep       |  4035.74962997 |
+| rcmsdata_sep04     |  5988.26459503 |
+| rcms_atm_may_9     |  1789.03178787 |
+| test1              |     0.01562500 |
+| test_welfare       |     0.02064514 |
++--------------------+----------------+
+26 rows in set, 2 warnings (4.27 sec)
+
+SELECT table_schema AS "Database name", SUM(ROUND(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024 / 1024), 2)) AS "SIZE IN GB" FROM information_schema.TABLES GROUP BY table_schema;
++--------------------+------------+
+| Database name      | SIZE IN GB |
++--------------------+------------+
+| aps_chennai        |       0.00 |
+| bds_rcms           |       5.81 |
+| gpstrackall        |       0.00 |
+| information_schema |       0.00 |
+| modify_rcms        |       0.04 |
+| mysql              |       0.00 |
+| otalms             |       0.00 |
+| performance_schema |       0.00 |
+| radiant            |       1.00 |
+| radiant_host       |       0.04 |
+| rcmsbilling        |       0.00 |
+| rcmsdata           |      29.53 |
+| rcmsdata_2015_2016 |       NULL |
+| rcmsdata_apr04     |       9.90 |
+| rcmsdata_april4    |       8.04 |
+| rcmsdata_aug       |       5.87 |
+| rcmsdata_feb       |       8.74 |
+| rcmsdata_june16    |       4.40 |
+| rcmsdata_march15   |      10.10 |
+| rcmsdata_new_last  |       0.00 |
+| rcmsdata_nov       |       0.03 |
+| rcmsdata_sep       |       3.89 |
+| rcmsdata_sep04     |       5.82 |
+| rcms_atm_may_9     |       1.72 |
+| test1              |       0.00 |
+| test_welfare       |       0.00 |
++--------------------+------------+
+26 rows in set, 2 warnings (3.21 sec)
+
+
+
+mysqldump -u root -p rcmsdata_aug | gzip > rcmsdata_aug.gz done
+
+mysqldump -u root -p rcmsdata_feb | gzip > rcmsdata_feb.gz done
+
+mysqldump -u root -p rcmsdata_june16 | gzip > rcmsdata_june16.gz
+
+
+
+
+
+
+
+
