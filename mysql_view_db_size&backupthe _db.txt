@@ -32,5 +32,11 @@ SELECT table_schema AS "Database name", SUM(ROUND(((DATA_LENGTH + INDEX_LENGTH) 
 
 mysqldump -u root -p oldrcmsdata_2015_2016 | gzip > oldrcmsdata_2015_2016.gz
 
+### How to backup table structure 
+mysqldump -u root -p database_name --compact --no-data | gzip > backup.gz
+
+### Restore data 
+mysql -u root -p restore_databasces_name < backup
+
 ## show the all file size human
    du -shxP *	
