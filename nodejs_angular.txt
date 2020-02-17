@@ -1,0 +1,42 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Metal base os configuration					    +
+ Install nodejs                                                     +
+ sudo apt-get install nodejs                                        +
+ node -v                                                            +
+--------------------------------------------------------------------+
+ install angular cli                                                +
+ sudo npm install -g @angular/cli                                   +
+--------------------------------------------------------------------+
+ create application                                                 +
+ sudo ng new red                                                    +
+--------------------------------------------------------------------+
+ open application floder                                            +
+ cd red                                                             +
+--------------------------------------------------------------------+
+ build command                                                      +
+ sudo ng build                                                      +
+--------------------------------------------------------------------+
+ nodejs server start command                                        +
+ sudo ng serve                                                      +
+--------------------------------------------------------------------+
+ move the node module                                               +
+ sudo mv node_modules /home/ubuntu                                  +
+--------------------------------------------------------------------+
+ Docker container base build file                                   +
+ create dockerfile                                                  +
+ sudo vim Dockerfile                                                +
+ FROM node:alpine as builder                                        +
+ WORKDIR /app                                                       +
+ COPY . .                                                           +
+ RUN npm install                                                    +
+ RUN npm run build --prod                                           +
+                                                                    +
+ FROM nginx:latest                                                  +
+ COPY --from=builder /app/dist/red /usr/share/nginx/html            +
+ -------------------------------------------------------------------+
+ sudo docker build . -t angulartest:vr2                             +
+ -------------------------------------------------------------------+
+ sudo docker run -dit -p 4500:80 --name testserver angulartest:vr2  +
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
