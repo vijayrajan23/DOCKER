@@ -1,3 +1,6 @@
+
+
+                      NODE with ANGULAR
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  Metal base os configuration					    +
  Install nodejs                                                     +
