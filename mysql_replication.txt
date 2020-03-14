@@ -1,0 +1,120 @@
+
+cat /etc/my.cnf
+[client]
+port       = 3306
+socket     = /var/lib/mysql/mysql.sock
+
+[mysqld]
+datadir    = /var/lib/mysql
+socket     = /var/lib/mysql/mysql.sock
+port 	   = 3306
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links  = 0
+log-error       = /var/log/mysqld.log
+pid-file        = /var/run/mysqld/mysqld.pid
+
+## Replication master
+bind-address    = 0.0.0.0
+server-id	= 1 
+log_bin		= /var/log/mysql/mysql-bin.log
+
+
+mkdir -p /var/log/mysql
+chown -R mysql:mysql /var/log/mysql
+
+systemctl restart mysqld
+
+mysql -u root -p 
+
+
+mysql> create user 'repl'@'%' identified by 'Vj@9789949626';
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> grant replication slave on *.* to 'repl'@'%';
+Query OK, 0 rows affected (0.13 sec)
+
+
+mysql> create database vijay;
+Query OK, 1 row affected (0.13 sec)
+
+mysql> create table vijay.temp(name varchar(20));
+Query OK, 0 rows affected (1.32 sec)
+
+mysql> insert into vijay.temp values('hellp');
+Query OK, 1 row affected (0.25 sec)
+
+
+mysqldump -uroot -p --all-databases --master-data > masterdump.sql
+
+grep CHANGE *sql | head -1
+
+scp masterdump.sql 192.168.5.72:
+
+SLAVE configuration
+cat /etc/my.cnf
+[client]
+port 		= 3306
+socket		= /var/lib/mysql/mysql.sock
+[mysqld]
+datadir		= /var/lib/mysql
+socket		= /var/lib/mysql/mysql.sock
+port            = 3306
+
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+## Replication slave configuration 
+
+bind-address	= 0.0.0.0
+server-id	= 2
+log_bin		= /var/log/mysql/mysql-bin.log
+
+
+
+
+     mkdir -p /var/log/mysql
+     chown -R mysql:mysql /var/log/mysql
+     systemctl status mysqld
+     systemctl restart  mysqld
+     systemctl status mysqld
+     mysql -u root -p
+
+    -> CHANGE MASTER TO
+    -> MASTER_HOST='192.168.5.71',
+    -> MASTER_USER='repl',
+    -> MASTER_PASSWORD='Vj@9789949626';
+Query OK, 0 rows affected, 2 warnings (1.54 sec)
+
+ exit 
+ and restore thes master backup 
+
+ mysql -u root -p < masterdump.sql
+
+login mysql 
+
+start slave;
+
+show slave status\G;
+
+Reset slave and chage master..
+
+
+UNLOCK TABLES;
+
+STOP SLAVE;
+RESET MASTER;
+
+
+CHANGE MASTER TO
+MASTER_HOST='192.168.5.72',
+MASTER_USER='repl',
+MASTER_PASSWORD='Vj@9789949626';
+
+
+
+
+
+
+
